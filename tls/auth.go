@@ -11,6 +11,7 @@ import (
 	"encoding/asn1"
 	"errors"
 	"fmt"
+	"github.com/fabric-creed/cryptogm/sm2"
 )
 
 // pickSignatureAlgorithm selects a signature algorithm that is compatible with
@@ -34,7 +35,7 @@ func pickSignatureAlgorithm(pubkey crypto.PublicKey, peerSigAlgs, ourSigAlgs []S
 			} else {
 				return PKCS1WithSHA1, signaturePKCS1v15, crypto.SHA1, nil
 			}
-		case *ecdsa.PublicKey:
+		case *ecdsa.PublicKey, *sm2.PublicKey:
 			return ECDSAWithSHA1, signatureECDSA, crypto.SHA1, nil
 		default:
 			return 0, 0, 0, fmt.Errorf("tls: unsupported public key: %T", pubkey)
@@ -54,7 +55,7 @@ func pickSignatureAlgorithm(pubkey crypto.PublicKey, peerSigAlgs, ourSigAlgs []S
 			if sigType == signaturePKCS1v15 || sigType == signatureRSAPSS {
 				return sigAlg, sigType, hashAlg, nil
 			}
-		case *ecdsa.PublicKey:
+		case *ecdsa.PublicKey, *sm2.PublicKey:
 			if sigType == signatureECDSA {
 				return sigAlg, sigType, hashAlg, nil
 			}
@@ -81,8 +82,17 @@ func verifyHandshakeSignature(sigType uint8, pubkey crypto.PublicKey, hashFunc c
 		if ecdsaSig.R.Sign() <= 0 || ecdsaSig.S.Sign() <= 0 {
 			return errors.New("tls: ECDSA signature contained zero or negative values")
 		}
-		if !ecdsa.Verify(pubKey, digest, ecdsaSig.R, ecdsaSig.S) {
-			return errors.New("tls: ECDSA verification failure")
+		switch pubkey.(type) {
+		case *ecdsa.PublicKey:
+			if !ecdsa.Verify(pubkey.(*ecdsa.PublicKey), digest, ecdsaSig.R, ecdsaSig.S) {
+				return errors.New("tls: ECDSA verification failure")
+			}
+		case *sm2.PublicKey:
+			if !sm2.Verify(pubkey.(*sm2.PublicKey), digest, ecdsaSig.R, ecdsaSig.S) {
+				return errors.New("tls: SM2 verification failure")
+			}
+		default:
+			return errors.New("tls: ECDSA/SM2 signing requires a ECDSA/SM2 public key")
 		}
 	case signaturePKCS1v15:
 		pubKey, ok := pubkey.(*rsa.PublicKey)

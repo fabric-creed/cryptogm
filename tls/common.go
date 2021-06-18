@@ -11,7 +11,7 @@ import (
 	"crypto/sha512"
 	"errors"
 	"fmt"
-	"github.com/cetcxinlian/cryptogm/x509"
+	"github.com/fabric-creed/cryptogm/x509"
 	"io"
 	"math/big"
 	"net"
@@ -341,7 +341,7 @@ const (
 // modified. A Config may be reused; the tls package will also not
 // modify it.
 type Config struct {
-	//if not nil, will support GMT0024
+	// if not nil, will support GMT0024
 	GMSupport *GMSupport
 
 	// Rand provides the source of entropy for nonces and RSA blinding.

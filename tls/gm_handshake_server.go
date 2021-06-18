@@ -11,7 +11,8 @@ import (
 	"crypto/subtle"
 	"errors"
 	"fmt"
-	"github.com/cetcxinlian/cryptogm/x509"
+	"github.com/fabric-creed/cryptogm/sm2"
+	"github.com/fabric-creed/cryptogm/x509"
 	"io"
 	"sync/atomic"
 )
@@ -140,26 +141,26 @@ func (hs *serverHandshakeStateGM) readClientHello() (isResume bool, err error) {
 
 	hs.hello = new(serverHelloMsg)
 
-	//supportedCurve := false
-//	preferredCurves := c.config.curvePreferences()
-//Curves:
-//	for _, curve := range hs.clientHello.supportedCurves {
-//		for _, supported := range preferredCurves {
-//			if supported == curve {
-//				supportedCurve = true
-//				break Curves
-//			}
-//		}
-//	}
-//
-//	supportedPointFormat := false
-//	for _, pointFormat := range hs.clientHello.supportedPoints {
-//		if pointFormat == pointFormatUncompressed {
-//			supportedPointFormat = true
-//			break
-//		}
-//	}
-//	hs.ellipticOk = supportedCurve && supportedPointFormat
+	// supportedCurve := false
+	//	preferredCurves := c.config.curvePreferences()
+	// Curves:
+	//	for _, curve := range hs.clientHello.supportedCurves {
+	//		for _, supported := range preferredCurves {
+	//			if supported == curve {
+	//				supportedCurve = true
+	//				break Curves
+	//			}
+	//		}
+	//	}
+	//
+	//	supportedPointFormat := false
+	//	for _, pointFormat := range hs.clientHello.supportedPoints {
+	//		if pointFormat == pointFormatUncompressed {
+	//			supportedPointFormat = true
+	//			break
+	//		}
+	//	}
+	//	hs.ellipticOk = supportedCurve && supportedPointFormat
 
 	foundCompression := false
 	// We only support null compression, so check that the client offered it.
@@ -217,10 +218,10 @@ func (hs *serverHandshakeStateGM) readClientHello() (isResume bool, err error) {
 	}
 	// GMT0024
 	// mod by syl just for test change two certs into one cert
-	//if len(hs.cert.Certificate) < 2 {
+	// if len(hs.cert.Certificate) < 2 {
 	//	c.sendAlert(alertInternalError)
 	//	return false, fmt.Errorf("tls: amount of server certificates must be greater than 2, which will sign and encipher respectively")
-	//}
+	// }
 	if len(hs.cert.Certificate) < 1 {
 		c.sendAlert(alertInternalError)
 		return false, fmt.Errorf("tls: amount of server certificates must be greater than 0")
@@ -696,7 +697,7 @@ func (hs *serverHandshakeStateGM) processCertsFromClient(certificates [][]byte) 
 
 	var pub crypto.PublicKey
 	switch key := certs[0].PublicKey.(type) {
-	case *ecdsa.PublicKey, *rsa.PublicKey:
+	case *ecdsa.PublicKey, *rsa.PublicKey, *sm2.PublicKey:
 		pub = key
 	default:
 		c.sendAlert(alertUnsupportedCertificate)

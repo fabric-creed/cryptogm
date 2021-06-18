@@ -6,10 +6,10 @@ package tls
 
 import (
 	"bytes"
-	"github.com/cetcxinlian/crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/fabric-creed/cryptogm/x509"
 	"io"
 	"io/ioutil"
 	"math"

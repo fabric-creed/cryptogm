@@ -10,12 +10,12 @@ import (
 	"crypto/elliptic"
 	"encoding/asn1"
 	"errors"
-	"github.com/cetcxinlian/cryptogm/sm2"
-	"github.com/cetcxinlian/cryptogm/x509"
+	"github.com/fabric-creed/cryptogm/sm2"
+	"github.com/fabric-creed/cryptogm/x509"
 	"io"
 	"math/big"
 
-	"golang_org/x/crypto/curve25519"
+	"github.com/fabric-creed/cryptox/curve25519"
 )
 
 
