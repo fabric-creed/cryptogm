@@ -71,10 +71,6 @@ func pickSignatureAlgorithm(pubkey crypto.PublicKey, peerSigAlgs, ourSigAlgs []S
 func verifyHandshakeSignature(sigType uint8, pubkey crypto.PublicKey, hashFunc crypto.Hash, digest, sig []byte) error {
 	switch sigType {
 	case signatureECDSA:
-		pubKey, ok := pubkey.(*ecdsa.PublicKey)
-		if !ok {
-			return errors.New("tls: ECDSA signing requires a ECDSA public key")
-		}
 		ecdsaSig := new(ecdsaSignature)
 		if _, err := asn1.Unmarshal(sig, ecdsaSig); err != nil {
 			return err
