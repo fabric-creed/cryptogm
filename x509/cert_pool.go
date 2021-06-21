@@ -168,3 +168,7 @@ func (s *CertPool) Subjects() [][]byte {
 	}
 	return res
 }
+
+func (s *CertPool) GetCerts() []*Certificate {
+	return s.certs
+}
